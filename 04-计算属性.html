@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    firstName: <input type="text" v-model="firstName"><br>
+    lastName: <input type="text" v-model="lastName"><br>
+
+    <!-- {{ firstName + lastName }} -->
+
+    {{ fullName }}
+
+    <!-- 把字符串翻转输出，示意代码 -->
+    <!-- {{ msg.split(',').reverse().join(',') }} -->
+
+
+
+  </div>
+  <script src="vue.js"></script>
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        firstName: '',
+        lastName: ''
+      },
+      // 计算属性 - 监视数据的变化 - 数据一变化计算属性会重新执行
+      computed: {
+        fullName: function () {
+          return this.firstName + this.lastName;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

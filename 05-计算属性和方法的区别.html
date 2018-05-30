@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+      1. 方法每次调用都会执行
+      2. 计算属性只有当依赖的数据方法变化才会执行
+      <hr>
+      方法调用
+      <br>
+      {{ fn() }} <br>
+      {{ fn() }} <br>
+      {{ fn() }} <br>
+      
+      <hr>
+      计算属性
+      <br>
+      {{ fn1 }} <br>
+      {{ fn1 }} <br>
+      {{ fn1 }} <br>
+  </div>
+
+  <script src="vue.js"></script>
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      methods: {
+        fn() {
+          console.log('fn');
+          return new Date();
+        }
+      },
+      computed: {
+        fn1() {
+          console.log('fn1 - 计算属性');
+          return new Date();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

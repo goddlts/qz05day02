@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    #app {
+      width: 600px;
+      margin: 10px auto;
+    }
+
+    .tb {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .tb th {
+      background-color: #0094ff;
+      color: white;
+    }
+
+    .tb td,
+    .tb th {
+      padding: 5px;
+      border: 1px solid black;
+      text-align: center;
+    }
+
+    .add {
+      padding: 5px;
+      border: 1px solid black;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="add">
+      品牌名称:
+      <input v-model.trim="brandName" type="text">
+      <input @click="handleAdd" type="button" value="添加">
+    </div>
+
+    <div class="add">
+      品牌名称:
+      <input v-model.trim="searchKey" type="text" placeholder="请输入搜索条件">
+    </div>
+
+    <div>
+      <table class="tb">
+        <tr>
+          <th>编号</th>
+          <th>品牌名称</th>
+          <th>创立时间</th>
+          <th>操作</th>
+        </tr>
+        <tr v-for="(item, index) in list" :key="item.id">
+          <td>{{ index + 1 }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.date | fmtDate('YYYY-MM-DD') }}</td>
+          <td>
+            <a href="#" @click.prevent="handleDelete(item.id)">删除</a>
+          </td>
+        </tr>
+        <tr v-if="list.length === 0">
+          <td colspan="4">没有品牌数据</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+
+  <script src="axios.js"></script>
+  <script src="vue.js"></script>
+  <script src="moment.js"></script>
+  <script>
+    // 全局过滤器，对日期进行格式化
+    Vue.filter('fmtDate', (value, fmtStr) => {
+      return moment(value).format(fmtStr);
+    });
+
+    var vm = new Vue({
+      el: '#app',
+      // 1 当页面加载完毕，请求品牌列表数据
+      mounted() {
+        this.loadList();
+      },
+      data: {
+        list: [],
+        brandName: '',
+        searchKey: ''
+      },
+      methods: {
+        // 加载列表数据
+        loadList() {
+          axios.get('http://localhost:3000/brands')
+            .then((res) => {
+              // console.log(res);
+              if (res.status === 200) {
+                this.list = res.data;
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+        },
+        // 2 删除数据
+        handleDelete(id) {
+          if (!confirm('是否要真的删除数据？')) {
+            return;
+          }
+          // 根据id删除数据
+          axios.delete(`http://localhost:3000/brands/${id}`)
+            .then((res) => {
+              if (res.status === 200) {
+                // 删除成功
+                // 重新加载列表数据
+                this.loadList();
+              } else {
+                alert('删除失败');
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        },
+        // 3 添加数据
+        // 3.1 给添加文本框绑定数据 √
+        // 3.2 给添加按钮注册事件   √
+        // 3.2.1 如果添加文本框没有输入，则返回
+        // 3.3 把数据post给服务器   √
+        // 3.4 判断是否添加成功，如果成功，刷新列表，清空文本框数据 √
+        handleAdd() {
+          if (this.brandName.length === 0) {
+            return;
+          }
+
+          axios.post('http://localhost:3000/brands', {
+              name: this.brandName,
+              date: new Date()
+            })
+            .then((res) => {
+              if (res.status === 201) {
+                this.loadList();
+                this.brandName = '';
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+      },
+      // 4 搜索  -- 侦听器
+      // 4.1 搜索文本框绑定数据   √
+      // 4.2 当输入搜索内容的时候发生变化，向服务器发送请求，获取搜索结果
+      // 4.3 把搜索结果重新渲染到界面
+      watch: {
+        // 监视搜索文本内容
+        searchKey(newValue, oldValue) {
+          axios.get('http://localhost:3000/brands', {
+              params: {
+                name_like: newValue
+              }
+            })
+            .then((res) => {
+              // 获取搜索的结果
+              this.list = res.data;
+            })
+            .then((error) => {
+              console.log(error);
+            })
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

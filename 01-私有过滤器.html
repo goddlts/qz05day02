@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    {{ msg | toUpper }}
+  </div>
+  <script src="vue.js"></script>
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        msg: 'helLO'
+      },
+      // 私有过滤器
+      filters: {
+        toUpper(value) {
+          // value就是要过滤(格式化)的数据
+          return value.charAt(0).toUpperCase() + value.substr(1).toLowerCase();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
